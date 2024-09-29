@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ABMV [javafx:run,-e]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+  <configuration default="false" name="ABMV [javafx:run]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
     <MavenSettings>
       <option name="myGeneralSettings" />
       <option name="myRunnerSettings" />
@@ -12,7 +12,6 @@
           <option name="goals">
             <list>
               <option value="javafx:run" />
-              <option value="-e" />
             </list>
           </option>
           <option name="pomFileName" />

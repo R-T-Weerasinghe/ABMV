@@ -3,81 +3,134 @@ package com.app.math;
 import org.jetbrains.annotations.NotNull;
 
 public class Vector2D {
-    private double x,y;
+    public double x;
+    public double y;
 
-    // constructor, getters, setters
     public Vector2D(double x, double y) {
         this.x = x;
         this.y = y;
     }
-    public double getX() {
-        return x;
-    }
-    public double getY() {
-        return y;
-    }
-    public void setX(double dx) {
-        x = x + dx;
-    }
-    public void setY(double dy) {
-        y = y + dy;
-    }
-    public void set(double dx, double dy) {
-        x = x + dx;
-        y = y + dy;
+
+    public Vector2D add(Vector2D other) {
+        return new Vector2D(this.x + other.x, this.y + other.y);
     }
 
-    // Operations
-    public Vector2D add(@NotNull Vector2D other) {
-        return new Vector2D(x + other.getX(), y + other.getY());
+    public void addInPlace(Vector2D other) {
+        this.x += other.x;
+        this.y += other.y;
     }
 
-    public Vector2D subtract(@NotNull Vector2D other) {
-        return new Vector2D(x - other.getX(), y - other.getY());
+    public Vector2D subtract(Vector2D other) {
+        return new Vector2D(this.x - other.x, this.y - other.y);
     }
 
-    public Vector2D scale(double scalar) {
-        return new Vector2D(x * scalar, y * scalar);
+    public Vector2D multiply(double scalar) {
+        return new Vector2D(this.x * scalar, this.y * scalar);
     }
 
-    public double dotProduct(@NotNull Vector2D other) {
-        return x * other.getX() + y * other.getY();
+    public void multiplyInPlace(double scalar) {
+        this.x *= scalar;
+        this.y *= scalar;
+    }
+
+    public Vector2D divide(double scalar) {
+        if (scalar != 0) {
+            return new Vector2D(this.x / scalar, this.y / scalar);
+        } else {
+            throw new ArithmeticException("Cannot divide by zero");
+        }
+    }
+
+    public void divideInPlace(double scalar) {
+        if (scalar != 0) {
+            this.x /= scalar;
+            this.y /= scalar;
+        } else {
+            throw new ArithmeticException("Cannot divide by zero");
+        }
     }
 
     public double magnitude() {
         return Math.sqrt(x * x + y * y);
     }
 
-    public Vector2D normalize() {
-        double mag = magnitude();
-        return new Vector2D(x / mag, y / mag);
+    public double magnitudeSquared() {
+        return x * x + y * y;
     }
 
-    public double angle(@NotNull Vector2D other) {
-        return Math.acos(dotProduct(other) / (magnitude() * other.magnitude()));
+    public Vector2D normalize() {
+        double mag = magnitude();
+        if (mag != 0) {
+            return new Vector2D(x / mag, y / mag);
+        } else {
+            return new Vector2D(0, 0);
+        }
+    }
+
+    public void normalizeInPlace() {
+        double mag = magnitude();
+        if (mag != 0) {
+            this.x /= mag;
+            this.y /= mag;
+        }
+    }
+
+    public Vector2D limit(double max) {
+        if (magnitudeSquared() > max * max) {
+            return this.normalize().multiply(max);
+        }
+        return new Vector2D(x, y);
+    }
+
+    public void limitInPlace(double max) {
+        if (magnitudeSquared() > max * max) {
+            normalizeInPlace();
+            multiplyInPlace(max);
+        }
+    }
+
+    public void setMagnitude(double mag) {
+        normalizeInPlace();
+        multiplyInPlace(mag);
+    }
+
+    public double distance(Vector2D other) {
+        double dx = this.x - other.x;
+        double dy = this.y - other.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public double dot(Vector2D other) {
+        return this.x * other.x + this.y * other.y;
     }
 
     public Vector2D rotate(double angle) {
-        double newX = x * Math.cos(angle) - y * Math.sin(angle);
-        double newY = x * Math.sin(angle) + y * Math.cos(angle);
-        return new Vector2D(newX, newY);
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        return new Vector2D(x * cos - y * sin, x * sin + y * cos);
     }
 
-    public Vector2D project(@NotNull Vector2D other) {
-        double scalar = dotProduct(other) / other.magnitude();
-        return other.normalize().scale(scalar);
-    }
-
-    public Vector2D reflect(@NotNull Vector2D normal) {
-        return project(normal).scale(2).subtract(this);
-    }
-
-    public Vector2D copy() {
-        return new Vector2D(x, y);
+    public static Vector2D random2D() {
+        double angle = Math.random() * 2 * Math.PI;
+        return new Vector2D(Math.cos(angle), Math.sin(angle));
     }
 
     @Override
     public String toString() {
-        return "(" + x + ", " + y + ")";
+        return "Vector2D(" + x + ", " + y + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Vector2D vector2D = (Vector2D) obj;
+        return Double.compare(vector2D.x, x) == 0 &&
+                Double.compare(vector2D.y, y) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * Double.hashCode(x) + Double.hashCode(y);
     }
 }
